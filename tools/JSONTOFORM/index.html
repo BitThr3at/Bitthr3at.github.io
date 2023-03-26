@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JSON to www-form-urlencoded Converter</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" />
+    <style>
+    .json-input {
+    width: 100%;
+    height: 300px;
+    font-size: 1rem;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    color: #24292e;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #d1d5da;
+    resize: none;
+    }
+    .btn-copy {
+    position: relative;
+    overflow: hidden;
+    }
+    .btn-copy:focus {
+    box-shadow: none;
+    }
+    .btn-copy-tooltip {
+    position: absolute;
+    top: -35px;
+    left: -5px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease-in-out;
+    }
+    .show-tooltip .btn-copy-icon {
+    display: none;
+    }
+    .show-tooltip .btn-copy-ticked-icon {
+    display: block;
+    }
+    .btn-copy-ticked-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    transition: all 0.2s ease-in-out;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <h1 class="text-center mb-5">JSON to www-form-urlencoded Converter</h1>
+          <div class="form-group">
+            <label for="json-input">JSON Payload:</label>
+            <textarea class="form-control json-input" id="json-input" rows="8" ></textarea>
+          </div>
+          <button type="button" class="btn btn-primary btn-block mb-3" onclick="convertJsonToUrlEncoded()">Convert</button>
+          <div class="form-group">
+            <label for="url-encoded-input">www-form-urlencoded Payload:</label>
+            <div class="input-group">
+              <input type="text" class="form-control" id="url-encoded-input" readonly>
+              <div class="input-group-append">
+                <button type="button" class="btn btn-secondary btn-copy" onclick="copyToClipboard()" title="Copy to Clipboard">
+                <i class="fas fa-copy btn-copy-icon"></i>
+                <span class="btn-copy-tooltip" id="copy-tooltip">Copy to Clipboard</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+    function jsonToUrlEncoded(jsonData, parentKey = '') {
+    let urlEncodedData = '';
+    for (let prop in jsonData) {
+    if (jsonData.hasOwnProperty(prop)) {
+    let key = parentKey ? `${parentKey}[${encodeURIComponent(prop)}]` : encodeURIComponent(prop);
+    let value = jsonData[prop];
+    if (value === null || value === undefined) {
+    continue;
+    }
+    if (typeof value === 'object') {
+    if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i++) {
+    urlEncodedData += `${jsonToUrlEncoded(value[i], key)}&`;
+    }
+    } else {
+    urlEncodedData += `${jsonToUrlEncoded(value, key)}&`;
+    }
+    } else {
+    value = encodeURIComponent(value);
+    urlEncodedData += `${key}=${value}&`;
+    }
+    }
+    }
+    // Remove the last '&' character
+    urlEncodedData = urlEncodedData.slice(0, -1);
+    return urlEncodedData;
+    }
+    function convertJsonToUrlEncoded() {
+    let jsonInput = document.getElementById('json-input');
+    let urlEncodedInput = document.getElementById('url-encoded-input');
+    let jsonData = JSON.parse(jsonInput.value);
+    let urlEncodedData = jsonToUrlEncoded(jsonData);
+    urlEncodedInput.value = urlEncodedData;
+    }
+    function copyToClipboard() {
+    let urlEncodedInput = document.getElementById('url-encoded-input');
+    urlEncodedInput.select();
+    document.execCommand('copy');
+    let copyBtn = document.querySelector('.btn-copy');
+    copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+    setTimeout(function() {
+    copyBtn.innerHTML = '<i class="fas fa-copy btn-copy-icon style="color:green"></i>';
+    }, 1000);
+    }
+    </script>
+    <!-- Include Bootstrap and Popper.js libraries -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script> -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  </body>
+</html>
