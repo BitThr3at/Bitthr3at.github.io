@@ -99,13 +99,29 @@
     urlEncodedData = urlEncodedData.slice(0, -1);
     return urlEncodedData;
     }
-    function convertJsonToUrlEncoded() {
+    
+function convertJsonToUrlEncoded() {
     let jsonInput = document.getElementById('json-input');
     let urlEncodedInput = document.getElementById('url-encoded-input');
-    let jsonData = JSON.parse(jsonInput.value);
+    let jsonData;
+    try {
+        jsonData = JSON.parse(jsonInput.value);
+    } catch (e) {
+        let inputStr = jsonInput.value;
+        let obj = {};
+        let keyValues = inputStr.replace(/[{}]/g, '').split(', ');
+        keyValues.forEach(function(kv) {
+            let key = kv.split(': ')[0];
+            let value = kv.split(': ')[1];
+            obj[key] = value;
+        });
+        jsonData = obj;
+    }
     let urlEncodedData = jsonToUrlEncoded(jsonData);
     urlEncodedInput.value = urlEncodedData;
-    }
+}
+
+
     function copyToClipboard() {
     let urlEncodedInput = document.getElementById('url-encoded-input');
     urlEncodedInput.select();
