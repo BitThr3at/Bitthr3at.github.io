@@ -99,7 +99,8 @@
     urlEncodedData = urlEncodedData.slice(0, -1);
     return urlEncodedData;
     }
-    
+
+      //new handling for json like {name:admin , last: sms, serv: v1, sern: offline-partner} [without quoutes]
 function convertJsonToUrlEncoded() {
     let jsonInput = document.getElementById('json-input');
     let urlEncodedInput = document.getElementById('url-encoded-input');
